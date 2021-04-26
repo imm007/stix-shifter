@@ -91,6 +91,7 @@ class BaseConnector:
     def create_results_stix_connection(self, entry_point, search_id, offset, length, data_source):
         result = entry_point.create_results_connection(search_id, offset, length)
         print('-------------base_connector---------------------')
+        print('len: ' + str(length))
         print("results_len: " + str(len(result)))
         print(json.dumps(result, indent=4))
         print('----------------------------------')
