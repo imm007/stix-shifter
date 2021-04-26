@@ -89,6 +89,10 @@ class BaseConnector:
         raise NotImplementedError()
 
     def create_results_stix_connection(self, entry_point, search_id, offset, length, data_source):
+        print('-------------base_connector---------------------')
+        print("results_len: " + str(len(result)))
+        print(json.dumps(result, indent=4))
+        print('----------------------------------')
         result = entry_point.create_results_connection(search_id, offset, length)
         if result and 'success' in result and result['success']:
             result = entry_point.translate_results(data_source, json.dumps(result['data']))
