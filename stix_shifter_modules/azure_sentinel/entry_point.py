@@ -4,6 +4,7 @@ from .stix_translation.query_translator import QueryTranslator
 from stix_shifter_utils.utils.base_entry_point import BaseEntryPoint
 from stix_shifter_utils.modules.base.stix_transmission.base_connector import BaseConnector
 from stix_shifter_utils.stix_translation.src.json_to_stix.json_to_stix import JSONToStix
+from .stix_translation.results_translator import ResultsTranslator
 
 
 class EntryPoint(BaseEntryPoint):
@@ -17,7 +18,6 @@ class EntryPoint(BaseEntryPoint):
             module_path = "stix_shifter_modules." + module_name + ".stix_transmission." + options.get("api")
             module = importlib.import_module(module_path + ".connector")
             connector = module.Connector(connection, configuration)
-
             if not isinstance(connector, BaseConnector):
                 raise Exception('connector is not instance of BaseConnector')
             self.set_query_connector(connector)
@@ -32,28 +32,23 @@ class EntryPoint(BaseEntryPoint):
             api_type = "Log Analytics"
 
         basepath = os.path.dirname(__file__)
-        filepath = os.path.abspath(os.path.join(basepath, "stix_translation", api_type))
-
+        filepath = os.path.abspath(
+            os.path.join(basepath, "stix_translation"))
         if api_type == "Graph Security":
-            dialect = 'default'
+            dialect = 'GraphSecurity'
             query_translator = QueryTranslator(options, dialect, filepath)
-            results_translator = JSONToStix(options, dialect, filepath)
-            self.add_dialect(dialect, query_translator=query_translator, results_translator=results_translator,
-                             default=True)
-
-        if api_type == "Log Analytics":
+            results_translator = ResultsTranslator(options, dialect, filepath)
+            self.add_dialect(dialect, query_translator=query_translator, results_translator=results_translator, default=True)
+        else:
             dialect = 'SecurityAlert'
             query_translator = QueryTranslator(options, dialect, filepath)
-            results_translator = JSONToStix(options, dialect, filepath)
-            self.add_dialect(dialect, query_translator=query_translator, results_translator=results_translator,
-                             default=True)
+            results_translator = ResultsTranslator(options, dialect, filepath)
+            self.add_dialect(dialect, query_translator=query_translator, results_translator=results_translator, default=True)
             dialect = 'SecurityEvent'
             query_translator = QueryTranslator(options, dialect, filepath)
-            results_translator = JSONToStix(options, dialect, filepath)
-            self.add_dialect(dialect, query_translator=query_translator, results_translator=results_translator,
-                             default=False)
+            results_translator = ResultsTranslator(options, dialect, filepath)
+            self.add_dialect(dialect, query_translator=query_translator, results_translator=results_translator, default=True)
             dialect = 'SecurityIncident'
             query_translator = QueryTranslator(options, dialect, filepath)
-            results_translator = JSONToStix(options, dialect, filepath)
-            self.add_dialect(dialect, query_translator=query_translator, results_translator=results_translator,
-                             default=False)
+            results_translator = ResultsTranslator(options, dialect, filepath)
+            self.add_dialect(dialect, query_translator=query_translator, results_translator=results_translator, default=True)
